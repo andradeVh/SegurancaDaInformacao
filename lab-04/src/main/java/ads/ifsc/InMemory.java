@@ -11,16 +11,23 @@ public class InMemory implements UserRepository {
 
     public boolean save(User user){
         String login = user.getLogin();
+        if(dados.containsKey(login)){
+            return false;
+        }
         dados.put(login, user);
         return true;
     }
     public boolean update(User user){
         String login = user.getLogin();
+        if(!dados.containsKey(login)){
+            return false;
+        }
+        dados.remove(login);
         dados.put(login, user);
         return true;
     }
 
     public User findByLogin(String login){
-
+        return dados.get(login);
     }
 }
