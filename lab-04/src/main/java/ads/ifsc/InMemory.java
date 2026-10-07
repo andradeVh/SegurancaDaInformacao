@@ -1,11 +1,11 @@
 package ads.ifsc;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class InMemory implements UserRepository {
-    private HashMap<String, User> dados;
+    private Map<String, User> dados;
 
-    public InMemory(HashMap<String, User> dados) {
+    public InMemory(Map<String, User> dados) {
         this.dados = dados;
     }
 
