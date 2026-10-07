@@ -22,7 +22,6 @@ public class InMemory implements UserRepository {
         if(!dados.containsKey(login)){
             return false;
         }
-        dados.remove(login);
         dados.put(login, user);
         return true;
     }
