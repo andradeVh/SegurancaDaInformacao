@@ -1,5 +1,6 @@
 package ads.ifsc;
 
+import java.util.List;
 import java.security.SecureRandom;
 
 public class UserService {
@@ -120,5 +121,9 @@ public class UserService {
             throw new InvalidLoginException("login ou senha invalido");
         }
         return true;
+    }
+
+    public List<User> listAll(){
+        return repository.findAll();
     }
 }

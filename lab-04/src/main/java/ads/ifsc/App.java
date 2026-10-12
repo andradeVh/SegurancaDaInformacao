@@ -1,68 +1,129 @@
 package ads.ifsc;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class App {
     private UserService service;
-    private String hashAlgorithm;
+    // private String hashAlgorithm;
 
     public App(String hashAlg) {
+        UserRepository repository = new InMemory();
         this.service = new UserService(repository, hashAlg);
     }
 
-    public void displayMenu(){
-        IO.print("Menu principal:");
-        IO.print("1. Cadastrar:");
-        IO.print("2. Atualizar senha:");
-        IO.print("3. Autenticar:");
-        IO.print("0. Sair:");
+    public void displayMenu() {
+        boolean menu = true;
 
-        int opcao = IO.readln();
+        while (menu) {
+            IO.println("Menu principal:");
+            IO.println("1. Cadastrar:");
+            IO.println("2. Atualizar senha:");
+            IO.println("3. Autenticar:");
+            IO.println("4. Listar todos os usuários:");
+            IO.println("0. Sair:");
 
-        switch(opcao){
-            case 1:
-                // register
-                IO.print("Digite o seu nome:");
-                String nome = IO.readln();
-                IO.print("Digite o seu sobrenome:");
-                String sobrenome = IO.readln();
+            String opcao = IO.readln();
 
-                break;
-            case 2:
-                // listar
-                break;
-            case 3:
-                // update
-                break;
-            case 0:
-                break;
-            default:
-                // erro
+            switch (opcao) {
+                case "1":
+                    // register
+                    IO.println("Digite o login:");
+                    String loginRegister = IO.readln();
+                    IO.println("Digite a senha:");
+                    String passwordRegister = IO.readln();
+
+                    try {
+                        service.register(loginRegister, passwordRegister);
+                        IO.println("Usuário cadastrado com sucesso!");
+                    } catch (UserAlreadyExistsException e) {
+                        IO.print(e.getMessage());
+                    }
+                    break;
+                case "2":
+                    // updatePassword
+                    IO.println("Digite o login:");
+                    String login = IO.readln();
+                    IO.println("Digite a senha:");
+                    String currentPassword = IO.readln();
+                    IO.println("Digite a nova senha:");
+                    String newPassword = IO.readln();
+
+                    try {
+                        service.updatePassword(login, currentPassword, newPassword);
+                        IO.println("Senha atualizada com sucesso!");
+                    } catch (UserNotFoundException e) {
+                        IO.print(e.getMessage());
+                    } catch (InvalidPasswordException e) {
+                        IO.print(e.getMessage());
+                    }
+
+                    break;
+                case "3":
+                    // authenticate
+                    IO.println("Digite o login:");
+                    String loginAuth = IO.readln();
+                    IO.println("Digite a senha:");
+                    String passwordAuth = IO.readln();
+
+                    try {
+                        service.authenticate(loginAuth, passwordAuth);
+                        IO.println("Autenticação realizada com sucesso!");
+                    } catch (InvalidLoginException e) {
+                        IO.print(e.getMessage());
+                    }
+                    break;
+                case "4":
+                    // list all
+                    List<User> usuario = service.listAll();
+
+                    if (usuario.isEmpty() || usuario == null) {
+                        IO.println("nenhum usuário cadastrado");
+                    } else {
+                        IO.println("usuários cadastrados:");
+                        for (User user : usuario) {
+                            IO.println("Login: " + user.getLogin());
+                        }
+                    }
+                    
+                    break;
+                case "0":
+                    menu = false;
+                    break;
+                default:
+                    // erro
+                    IO.print("Opção inválida");
+            }
+
         }
-    }
-
-    private void cadastrar(String login, String password, String hashAlgorithm){
-
     }
 
     public static void main(String[] args) {
-        App app = new App();
-        app.displayMenu();
+        // App app = new App();
+        // app.displayMenu();
 
-        IO.print("Qual algoritmo de hash gostaria de usar?");
-        IO.print("1. PBKDF2");
-        IO.print("2. BCrypt");
-        IO.print("0. Sair:");
+        IO.println("Qual algoritmo de hash gostaria de usar?");
+        IO.println("1. PBKDF2");
+        IO.println("2. BCrypt");
+        IO.println("0. Sair:");
         String opcao2 = IO.readln();
-        switch(opcao2){
+        App app = null;
+
+        switch (opcao2) {
             case "1":
-                App app = new App("PBKDF2");
+                app = new App("PBKDF2");
                 break;
             case "2":
+                app = new App("BCrypt");
                 break;
             case "0":
-                break;
+                return;
+            default:
+                IO.print("Opção invalida. Utilizando BCrypt por padrão");
+                app = new App("BCrypt");
         }
+
+        app.displayMenu();
 
     }
 }
