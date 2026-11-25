@@ -1,0 +1,22 @@
+services:
+  app-java:
+    build: .
+    container_name: app-java
+    ports:
+      - "8080:8080"
+    depends_on:
+      - vault-server
+    environment:
+      # Salvo no arquivo .env
+      VAULT_SECRET_ID: ${VAULT_SECRET_ID}
+
+  vault-server:
+    image: hashicorp/vault:latest
+    container_name: vault-server
+    ports:
+      - "127.0.0.1:8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: "token-admin-dev-apenas"
+      VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
+    cap_add:
+      - IPC_LOCK
